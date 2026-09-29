@@ -40,6 +40,12 @@ header{display:grid;gap:12px}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:13px}
 .chip b{font-weight:600}
 
+.modeBar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.modeBar .eyebrow{margin-right:4px}
+.modeBtn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:14px}
+.modeBtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.modeBtn[aria-pressed="true"] .muted{color:var(--bg);opacity:.7}
+.edu{font-size:14px;margin-top:4px;color:var(--accent);font-weight:600}
 .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .tab{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:12px;text-align:left;cursor:pointer;display:grid;gap:2px}
 .tab .city{font-weight:700;font-size:16px}
@@ -109,7 +115,7 @@ footer{font-size:12px;color:var(--muted);max-width:80ch}
   <header>
     <span class="eyebrow">대표님 가족 이사 전략 · 2027 입주</span>
     <h1>전세 나침반</h1>
-    <p class="lede">현대백화점 근무지까지의 출퇴근, 초등학교 2학년 아들의 통학과 전학 시기, 지역별 전세 예산을 함께 따져 네 개 도시의 단지를 1~5순위로 정리했습니다. 국토교통부 실거래 API 키를 넣으면 최근 전세 계약을 불러와 예산 이하 거래만 골라 보여줍니다.</p>
+    <p class="lede">아들이 다니기 좋은 학교와 학원가를 먼저 보고, 현대백화점 근무지까지의 출퇴근과 지역별 전세 예산을 함께 따져 네 개 도시의 단지를 1~5순위로 정리했습니다. 위의 추천 기준 버튼으로 출퇴근 우선 순위와 바꿔 볼 수 있습니다. 국토교통부 실거래 API 키를 넣으면 최근 전세 계약을 불러와 예산 이하 거래만 골라 보여줍니다.</p>
     <div class="facts">
       <span class="chip">현재 <b>지웰시티 2차</b> 전세 <b class="num">4.1억</b></span>
       <span class="chip">가족 <b>3인</b> · 외벌이</span>
@@ -118,6 +124,11 @@ footer{font-size:12px;color:var(--muted);max-width:80ch}
     </div>
   </header>
 
+  <div class="modeBar" role="group" aria-label="추천 기준">
+    <span class="eyebrow">추천 기준</span>
+    <button class="modeBtn" id="mode-school" data-mode="school" type="button">학군·학원가 우선 <span class="muted">+ 출퇴근</span></button>
+    <button class="modeBtn" id="mode-commute" data-mode="commute" type="button">출퇴근 우선</button>
+  </div>
   <nav class="tabs" role="tablist" id="tabs"></nav>
 
   <main id="region"></main>
@@ -203,6 +214,30 @@ const REGIONS = {
     city:"청주", budget:30000, store:"커넥트현대 청주", storeArea:"흥덕구 복대동",
     lawd:[["43113","흥덕구"],["43112","서원구"]],
     summary:"지금 사는 복대동 생활권을 유지하면 아들의 학교를 바꾸지 않을 수 있습니다. 84㎡ 신축은 3억을 넘기 때문에 구축 84㎡ 또는 준신축 59㎡가 현실적인 선택입니다.",
+    school:{
+      summary:"청주에서 학원이 가장 많이 모인 곳은 서원구 산남동입니다. 84㎡ 전세가 2.6~3억 선이라 예산 안에 들어오고, 커넥트현대까지 차로 15~20분 걸립니다. 전학을 피하고 싶다면 5순위 복대동이 대안입니다.",
+      picks:[
+        {name:"산남 대원칸타빌 2차", key:"칸타빌2", umd:"산남동", year:null, size:"84㎡", est:[25000,29000], commute:"차 15~20분",
+          edu:"산남동 학원가 걸어서 이용 · 초·중·고가 모두 생활권 안",
+          pros:["84㎡ 전세 2.65억 실거래(2026.09)로 예산 안에서 여유","청주 대표 학원가를 걸어서 다닐 수 있어 픽업 부담이 적음"],
+          cons:["전학 필요","출퇴근이 지금보다 10~15분 늘어남"]},
+        {name:"산남 대원칸타빌 1단지", key:"칸타빌1", umd:"산남동", year:null, size:"84㎡", est:[26000,30000], commute:"차 15~20분",
+          edu:"산남동 학원가 걸어서 이용 · 명품학군으로 불리는 생활권",
+          pros:["2차와 같은 학원가를 이용하고 매물 선택지가 넓어짐","외곽도로로 복대동 방면 출퇴근이 편함"],
+          cons:["예산 상단에 걸리는 매물이 섞여 있음"]},
+        {name:"산남 푸르지오", key:"푸르지오", umd:"산남동", year:null, size:"84㎡", est:[27000,31000], commute:"차 15~20분",
+          edu:"산남동 학원가 중심부",
+          pros:["브랜드 단지, 학원가와 가까움"],
+          cons:["84㎡는 예산 경계, 층·향 타협이 필요할 수 있음"]},
+        {name:"산남 계룡리슈빌", key:"리슈빌", umd:"산남동", year:null, size:"84㎡", est:[28000,31000], commute:"차 15~20분",
+          edu:"산남동 학원가 걸어서 이용",
+          pros:["105㎡ 전세 3.4억 실거래(2026.09) 기준으로 84㎡는 3억 안팎 예상"],
+          cons:["예산 경계"], cond:true},
+        {name:"복대 두진하트리움 (전학 없음)", key:"하트리움", umd:"복대동", year:2015, size:"59~84㎡", est:[26000,30000], commute:"차 5분",
+          edu:"지금 다니는 학교 유지 · 복대·가경 학원가는 차로 5~10분",
+          pros:["아들이 친구와 학교를 그대로 유지","출퇴근이 가장 짧음"],
+          cons:["학원 규모와 선택지는 산남동보다 작음"]}
+      ]},
     picks:[
       {name:"복대 두진하트리움 (1차)", key:"하트리움", umd:"복대동", year:2015, size:"59~84㎡", est:[26000,30000], commute:"차 5분 · 도보 가능권",
         pros:["2015년 준공으로 후보 중 가장 새 아파트","지금과 같은 복대동이라 학교를 옮기지 않을 가능성이 큼"],
@@ -224,6 +259,30 @@ const REGIONS = {
     city:"울산", budget:39000, store:"현대백화점 울산점", storeArea:"남구 삼산동",
     lawd:[["31140","남구"],["31110","중구"]],
     summary:"삼산동 매장 기준으로 남구 야음·신정·달동이 출퇴근 10분 안쪽입니다. 3.9억이면 준신축 84㎡까지 가능해 네 지역 중 주거 수준을 올리기 가장 쉽습니다.",
+    school:{
+      summary:"울산에서 학원이 가장 많이 모인 곳은 남구 옥동이고, 신정동이 바로 옆입니다. 옥동 신축 84㎡는 6억을 넘으므로 3.9억으로는 구축 단지가 현실적입니다. 삼산동 매장까지 차로 15분 안팎 걸립니다.",
+      picks:[
+        {name:"옥동 삼익", key:"옥동삼익", umd:"옥동", year:null, size:"84㎡", est:[28000,36000], commute:"차 15분",
+          edu:"옥동 학원가 걸어서 이용 · 울산 대표 학군",
+          pros:["학원가 안쪽에서 예산 안의 84㎡를 구할 수 있음","걸어서 학원을 다닐 수 있어 전업주부 아내의 픽업 부담이 줄어듦"],
+          cons:["구축, 수리 상태 편차 큼"]},
+        {name:"옥동 대공원현대", key:"대공원현대", umd:"옥동", year:null, size:"84㎡", est:[25000,35000], commute:"차 15분",
+          edu:"옥동 학원가 · 울산대공원 인접",
+          pros:["대공원 옆이라 주거 환경이 쾌적함","학원가 접근성 좋음"],
+          cons:["구축"]},
+        {name:"울산 신정 푸르지오", key:"신정푸르지오", umd:"신정동", year:2006, size:"84㎡", est:[33000,39000], commute:"차 10분",
+          edu:"신정동 학원가 · 옥동 학원가 차 5분",
+          pros:["학원가와 출퇴근이 균형 잡힌 위치","브랜드 대단지"],
+          cons:["예산 상단"]},
+        {name:"옥동 대륙현대 2차", key:"대륙현대2", umd:"옥동", year:null, size:"중소형", est:[14000,22000], commute:"차 15분",
+          edu:"옥동 학원가",
+          pros:["보증금이 가장 낮아 돌려받는 차액이 큼"],
+          cons:["평형이 작아 3인 가족에게 좁을 수 있음"], cond:true},
+        {name:"울산 번영로 두산위브", key:"번영로두산위브", umd:"야음동", year:2016, size:"84㎡", est:[31000,36000], commute:"차 10분",
+          edu:"학원은 신정동 학원가까지 차 10분",
+          pros:["준신축 대단지 84㎡","단지 안에서 초등학교까지 가깝게 다닐 수 있음"],
+          cons:["주변 학원가가 약함"]}
+      ]},
     picks:[
       {name:"울산 번영로 두산위브", key:"번영로두산위브", umd:"야음동", year:2016, size:"84㎡", est:[31000,36000], commute:"차 10분",
         pros:["준신축 대단지 84㎡가 예산 안에 들어옴(인근 84㎡ 전세 3.3억 실거래)","단지 내 생활 편의시설, 초등학교 통학 동선이 짧은 편"],
@@ -243,8 +302,32 @@ const REGIONS = {
     ]},
   daegu:{
     city:"대구", budget:47000, store:"현대백화점 대구점", storeArea:"중구 계산동 · 반월당",
-    lawd:[["27110","중구"],["27200","남구"]],
+    lawd:[["27110","중구"],["27260","수성구"]],
     summary:"대구는 공급이 많아 전세가가 낮게 형성되어 있습니다. 4.7억이면 반월당 도보권의 2014년 이후 준공 단지 84㎡까지 가능하고, 대표님이 신축을 맡았던 대구점 바로 옆에서 생활할 수 있습니다.",
+    school:{
+      summary:"대구 학원가 1번지는 수성구 범어동·만촌동입니다. 신축은 10억대라 전세로도 예산을 넘지만, 준신축과 구축은 3~4억에 가능합니다. 지하철 2호선을 타면 범어역·만촌역에서 대구점이 있는 반월당역까지 한 번에 갑니다.",
+      picks:[
+        {name:"만촌역 태왕아너스", key:"태왕아너스", umd:"만촌동", year:null, size:"34평형", est:[38000,42000], commute:"2호선 만촌역→반월당 약 15분",
+          edu:"만촌동 학원가 걸어서 이용 · 수성구 학군",
+          pros:["34평 전세 4억(2026.08)으로 예산 안","역세권이라 지하철로 출퇴근, 차 없이도 가능"],
+          cons:["예산 대비 여유는 7천만 원 수준"]},
+        {name:"만촌 메트로팔레스 1단지", key:"메트로팔레스", umd:"만촌동", year:null, size:"37평형", est:[30000,34000], commute:"2호선 만촌역→반월당 약 15분",
+          edu:"만촌동 학원가 · 학원 여러 곳을 걸어서 다니는 생활권",
+          pros:["37평 전세 약 3억 시세로 넓게 살 수 있음","학원 등하원을 아이 혼자 걸어서 할 수 있다는 거주 후기"],
+          cons:["구축"]},
+        {name:"범어 궁전맨션", key:"궁전맨션", umd:"범어동", year:1988, size:"39~47평형", est:[31000,35000], commute:"2호선 범어역→반월당 약 8분",
+          edu:"범어동 학원가 한복판 · 대구의 대치동",
+          pros:["39평 전세 3.1억, 47평 3.5억(2026.07) 대형 평형","학원가와 지하철이 모두 걸어서 5분 안팎"],
+          cons:["1988년 준공, 주차와 설비 노후"]},
+        {name:"만촌 1차 우방타운", key:"우방타운", umd:"만촌동", year:null, size:"84㎡", est:[28000,36000], commute:"차 15분",
+          edu:"만촌동 학원가",
+          pros:["대단지 구축으로 매물이 꾸준함"],
+          cons:["실거래로 가격 검증 필요"], cond:true},
+        {name:"e편한세상 남산", key:"e편한세상남산", umd:"남산동", year:2018, size:"84㎡", est:[36000,43000], commute:"걸어서 출퇴근 가능",
+          edu:"수성구 학원가까지 지하철 10분",
+          pros:["준신축 84㎡, 대구점과 가장 가까움"],
+          cons:["단지 주변 학원가가 약함"]}
+      ]},
     picks:[
       {name:"e편한세상 남산", key:"e편한세상남산", umd:"남산동", year:2018, size:"84㎡", est:[36000,43000], commute:"차 5분 · 도보 가능권",
         pros:["반월당 생활권 준신축 84㎡","도심 대단지라 학교·병원·지하철이 모두 가까움"],
@@ -264,8 +347,32 @@ const REGIONS = {
     ]},
   daejeon:{
     city:"대전", budget:42000, store:"현대프리미엄아울렛 대전점", storeArea:"유성구 용산동",
-    lawd:[["30200","유성구"],["30230","대덕구"]],
+    lawd:[["30200","유성구"],["30170","서구"]],
     summary:"아울렛 바로 옆 관평동 대덕테크노밸리 단지들은 출퇴근 5분 안쪽이고 초등학교가 단지마다 가깝습니다. 용산동 신축 84㎡는 4.45억 이상이라 예산을 넘습니다.",
+    school:{
+      summary:"대전 학원가 1번지는 서구 둔산동입니다. 목련·크로바 같은 대표 단지는 예산을 넘지만, 샘머리·녹원은 4.2억 안에 들어옵니다. 둔산동에서 용산동 아울렛까지는 차로 25~30분 걸리고, 관평동은 학원가와 출퇴근 5분을 함께 누릴 수 있는 곳입니다.",
+      picks:[
+        {name:"둔산 샘머리 2단지", key:"샘머리2", umd:"둔산동", year:null, size:"31평형", est:[31000,35000], commute:"차 25~30분",
+          edu:"둔산동 학원가 걸어서 이용 · 대전 최상위 학군",
+          pros:["31평 전세 3.3억 시세로 예산 여유","대전 학원가의 중심"],
+          cons:["출퇴근이 네 지역 추천 중 가장 김"]},
+        {name:"둔산 녹원", key:"녹원", umd:"둔산동", year:null, size:"32평형", est:[32000,39000], commute:"차 25~30분",
+          edu:"둔산동 학원가 걸어서 이용",
+          pros:["32평 전세 3.2~3.9억 시세","학원가와 공원이 모두 가까움"],
+          cons:["구축","출퇴근 거리"]},
+        {name:"대덕테크노밸리 5단지", key:"테크노밸리5", umd:"관평동", year:2008, size:"29평형", est:[37000,42000], commute:"차 5분",
+          edu:"관평동 학원가 걸어서 이용 · 유성 북부 학원 밀집지",
+          pros:["학원가와 출퇴근 5분을 함께 확보","초등학교가 단지와 가까움"],
+          cons:["학원 규모는 둔산동보다 작음","예산 상단"]},
+        {name:"대덕테크노밸리 1단지", key:"테크노밸리1", umd:"관평동", year:2006, size:"26평형", est:[34000,38000], commute:"차 5분",
+          edu:"관평동 학원가",
+          pros:["26평 전세 3.6억, 예산 여유"],
+          cons:["26평이라 수납이 다소 부족"]},
+        {name:"월평 진달래", key:"진달래", umd:"월평동", year:null, size:"84㎡", est:[28000,36000], commute:"차 25분",
+          edu:"둔산동 학원가와 붙어 있는 월평동",
+          pros:["둔산 학원가를 쓰면서 보증금을 낮출 수 있음"],
+          cons:["실거래로 가격 검증 필요"], cond:true}
+      ]},
     picks:[
       {name:"대덕테크노밸리 5단지", key:"테크노밸리5", umd:"관평동", year:2008, size:"29평형", est:[37000,42000], commute:"차 5분",
         pros:["최근 1개월 평균 전세 3.95억(29평)","관평동 학원가와 초등학교 도보권"],
@@ -286,8 +393,11 @@ const REGIONS = {
 };
 const CURRENT = 41000;
 const ORDER = ["cheongju","ulsan","daegu","daejeon"];
-const liveHits = {}; // regionId -> {pickIdx: row}
+const liveHits = {}; // "region:mode" -> {pickIdx: row}
 let active = "cheongju";
+let mode = "school";
+try{ const m = localStorage.getItem("jn_mode"); if(m==="school"||m==="commute") mode = m; }catch(e){}
+const pickSet = r => mode==="school" ? r.school : {summary:r.summary, picks:r.picks};
 try{ const s = localStorage.getItem("jn_region"); if(REGIONS[s]) active = s; }catch(e){}
 const byHash = location.hash.slice(1); if(REGIONS[byHash]) active = byHash;
 
@@ -320,31 +430,33 @@ function renderTabs(){
 }
 
 function renderRegion(){
-  const r = REGIONS[active];
-  const scaleMax = Math.max(r.budget, ...r.picks.map(p=>p.est[1])) * 1.08;
+  const r = REGIONS[active], set = pickSet(r);
+  document.querySelectorAll('.modeBtn').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mode===mode));
+  const scaleMax = Math.max(r.budget, ...set.picks.map(p=>p.est[1])) * 1.08;
   const pct = v => Math.min(100, v/scaleMax*100);
   const delta = CURRENT - r.budget;
   const diffTxt = delta>0
     ? `현재 보증금 대비 <b class="num">${eok(delta)}</b> 돌려받음 (예산 한도 기준)`
     : `현재 보증금보다 <b class="num">${eok(-delta)}</b> 추가 필요 (예산 한도 기준)`;
-  const hits = liveHits[active] || {};
+  const hits = liveHits[active+':'+mode] || {};
   document.getElementById("region").innerHTML = `
     <div class="regionHead">
       <div>
         <span class="eyebrow">${esc(r.store)} · ${esc(r.storeArea)}</span>
-        <h2>${r.city} 추천 1~5순위 · 전세 ${eok(r.budget)} 이하</h2>
-        <p class="muted">${esc(r.summary)}</p>
+        <h2>${r.city} ${mode==='school'?'학군·학원가':'출퇴근'} 우선 1~5순위 · 전세 ${eok(r.budget)} 이하</h2>
+        <p class="muted">${esc(set.summary)}</p>
       </div>
       <div class="diff">${diffTxt}</div>
     </div>
     <div class="list">
-    ${r.picks.map((p,i)=>{
+    ${set.picks.map((p,i)=>{
       const h = hits[i];
       return `<article class="card${p.cond?" cond":""}">
         <div class="rank">${i+1}</div>
         <div class="titleRow"><h3>${esc(p.name)}</h3>${fitPill(p,r.budget)}${p.cond?'<span class="pill warn">조건부</span>':""}</div>
-        <div class="meta"><span>${esc(p.umd||r.storeArea)}</span><span>${p.year?p.year+"년 준공":"구역 단위"}</span><span>${esc(p.size)}</span><span>출퇴근 ${esc(p.commute)}</span></div>
+        <div class="meta"><span>${esc(p.umd||r.storeArea)}</span><span>${p.year?p.year+"년 준공":(p.key?"준공연도 현장 확인":"구역 단위")}</span><span>${esc(p.size)}</span><span>출퇴근 ${esc(p.commute)}</span></div>
         <div style="grid-column:2">
+          ${p.edu?`<div class="edu">학원·학교 · ${esc(p.edu)}</div>`:""}
           <ul class="why">${p.pros.map(t=>`<li>${esc(t)}</li>`).join("")}${p.cons.map(t=>`<li class="con">${esc(t)}</li>`).join("")}</ul>
           <div class="gauge" aria-label="예상 전세 범위 ${eok(p.est[0])}~${eok(p.est[1])}, 예산 ${eok(r.budget)}">
             <div class="bar">
@@ -362,7 +474,7 @@ function renderRegion(){
         </div>
       </article>`;}).join("")}
     </div>
-    <p class="note">순위 기준은 출퇴근 거리, 아들 통학·전학 부담, 준공 연차, 예산 대비 여유 순으로 가중했습니다. 주황색 순위는 평형이나 구역을 좁혀야 성립하는 조건부 후보입니다.</p>`;
+    <p class="note">${mode==='school'?'순위는 학원가 접근성(걸어서 다닐 수 있는지)과 학군을 먼저 보고, 출퇴근 시간, 예산 여유, 준공 연차 순으로 정했습니다.':'순위는 출퇴근 거리, 아들 통학과 전학 부담, 준공 연차, 예산 여유 순으로 정했습니다.'} 주황색 순위는 평형이나 구역을 좁혀야 성립하는 조건부 후보입니다.</p>`;
 }
 
 /* ---------- 실시간 실거래 조회 ---------- */
@@ -436,9 +548,10 @@ $("liveForm").addEventListener("submit", async e=>{
     const rows = all.filter(x=>x.rent===0 && x.deposit>0 && x.deposit<=r.budget && x.area>=minArea && (!onlyNew || x.kind.includes("신규")))
                     .sort((a,b)=>b.date.localeCompare(a.date) || b.deposit-a.deposit);
     const hits = {};
-    rows.forEach(x=>{ x.pick = matchPick(x, r.picks); if(x.pick>=0 && !hits[x.pick]) hits[x.pick]=x; });
-    liveHits[regionId] = hits;
-    if(active===regionId) renderRegion();
+    const picksNow = pickSet(r).picks, modeKey = regionId+':'+mode;
+    rows.forEach(x=>{ x.pick = matchPick(x, picksNow); if(x.pick>=0 && !hits[x.pick]) hits[x.pick]=x; });
+    liveHits[modeKey] = hits;
+    if(active+':'+mode===modeKey) renderRegion();
     $("liveRows").innerHTML = rows.slice(0,300).map(x=>`<tr class="${x.pick>=0?"hit":""}">
       <td class="num">${x.date}</td><td>${esc(x.apt)}${x.pick>=0?` <span class="pill ok">${x.pick+1}순위</span>`:""}</td><td>${esc(x.umd)}</td>
       <td class="r num">${x.area}</td><td class="r num">${esc(x.floor)}</td><td class="r num"><b>${eok(x.deposit)}</b></td><td class="r num">${esc(x.built)}</td><td>${esc(x.kind)}</td></tr>`).join("");
@@ -455,5 +568,10 @@ $("liveForm").addEventListener("submit", async e=>{
   }finally{ $("runBtn").disabled = false; }
 });
 
+document.querySelectorAll(".modeBtn").forEach(b=>b.addEventListener("click",()=>{
+  mode = b.dataset.mode;
+  try{ localStorage.setItem("jn_mode",mode); }catch(e){}
+  renderRegion();
+}));
 renderTabs(); renderRegion(); resetLive();
 </script>
